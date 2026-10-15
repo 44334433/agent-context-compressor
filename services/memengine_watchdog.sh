@@ -2,7 +2,7 @@
 # mem-engine-service 健康看门狗 (2026-10-15 钩子生产化·daemon 稳定件)
 # 每次运行: embed 探活 → 连续 2 次失败 → systemctl restart mem-engine-service (自愈)
 # 状态文件: /tmp/embed_watchdog.fail (连续失败计数)
-# 豁免窗口: ninfer.service 卸载/回装期间 (GPU_WINDOW 文件存在时跳过, 防误杀训练期 engine)
+# 豁免窗口: 本地推理引擎 卸载/回装期间 (GPU_WINDOW 文件存在时跳过, 防误杀训练期 engine)
 
 STATE=/tmp/embed_watchdog.fail
 [ -f /tmp/gpu_window_open ] && { echo "[wd] GPU 窗口期, 跳过探活"; exit 0; }

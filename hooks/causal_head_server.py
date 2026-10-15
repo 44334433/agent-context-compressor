@@ -17,7 +17,7 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 BASE = os.path.join(os.environ.get("MODEL_DIR", os.path.expanduser("~/models")), "mmBERT-base")
 HEAD = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/models/causal-head-mmbert")
 PORT = 8767
-DEV = "cpu"  # 常驻低频调用: 强制 CPU (GPU 留给 NInfer 27B; CPU 单对 ~30ms 足够)
+DEV = "cpu"  # 后台低频调用: 强制 CPU (GPU 留给本地大模型推理; CPU 单对 ~30ms 足够)
 
 tok = AutoTokenizer.from_pretrained(BASE, use_fast=True)
 if tok.pad_token is None:
