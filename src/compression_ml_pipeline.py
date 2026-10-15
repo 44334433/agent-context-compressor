@@ -70,9 +70,8 @@ RE_TASKBOARD = re.compile(
 )
 RE_DECISION = re.compile(
     r"(?:"
-    r"过|按推荐|拍板|同意|做|不接受|拒绝|废弃|上线|回退|继续|记录|重跑|发我|"
-    r"选项[A-Za-z0-9]|不设最低点|方向明确|关键发现|⚠️\s*新发现|边界|工作点定在|"
-    r"先不要碰我的鼠标|主号|留\d+额度"
+    r"通过|过了|过审|拍板|同意|接受|拒绝|废弃|上线|回退|继续|记录|重跑|发我|"
+    r"确认|否决|推进|选项[A-Za-z0-9]|方向明确|关键发现|⚠️\s*新发现|边界|工作点定在"
     r")"
 )
 RE_METRIC = re.compile(
@@ -100,7 +99,7 @@ DECISION_PATTERNS = [
 
 CHANGE_PATTERNS = [
     re.compile(r"(?:diff 恰好|改动|配置现值|更新|替换|新增|修复|热生效|参数|落盘)"),
-    re.compile(r"(?:350K|256K|87K|tok|tokens|tok/s|%|pp|秒|s|ms|MB|GB)"),
+    re.compile(r"(?:\d+(?:\.\d+)?\s*(?:K|M|B)?\s*(?:tok|tokens|tok/s|%|pp|秒|s|ms|MB|GB))"),
 ]
 
 NEXT_PATTERNS = [
@@ -177,18 +176,44 @@ def extract_turn_anchors(text: str) -> Dict[str, List[str]]:
     }
 
 
+def _norm_content(msg: Dict[str, Any]) -> str:
+    """content 规范化: 兼容 str 与 Anthropic content-block list 两种形态 (list→拼接 text parts)。
+
+    避免 str(list) 退化导致下游正则全部失效 (外部反馈#3)。
+    """
+    c = msg.get("content")
+    if c is None:
+        return ""
+    if isinstance(c, str):
+        return c
+    if isinstance(c, list):
+        parts = []
+        for b in c:
+            if isinstance(b, dict) and b.get("type") == "text":
+                parts.append(str(b.get("text", "")))
+            elif isinstance(b, str):
+                parts.append(b)
+        return "\n".join(parts)
+    return str(c)
+
+
 def format_anchors_tag(anchors: Dict[str, List[str]]) -> str:
+    def _cap(items: List[str], n: int) -> str:
+        shown = items[:n]
+        extra = len(items) - len(shown)
+        return ', '.join(shown) + (f", …+{extra} more" if extra > 0 else "")
+
     parts = []
     if anchors.get("paths"):
-        parts.append(f"paths=[{', '.join(anchors['paths'][:32])}]")
+        parts.append(f"paths=[{_cap(anchors['paths'], 32)}]")
     if anchors.get("commits"):
-        parts.append(f"commits=[{', '.join(anchors['commits'][:8])}]")
+        parts.append(f"commits=[{_cap(anchors['commits'], 8)}]")
     if anchors.get("errors"):
-        parts.append(f"errors=[{', '.join(anchors['errors'][:3])}]")
+        parts.append(f"errors=[{_cap(anchors['errors'], 3)}]")
     if anchors.get("line_nums"):
-        parts.append(f"lines=[{', '.join(anchors['line_nums'][:4])}]")
+        parts.append(f"lines=[{_cap(anchors['line_nums'], 4)}]")
     if anchors.get("decisions"):
-        parts.append(f"decisions=[{', '.join(anchors['decisions'][:4])}]")
+        parts.append(f"decisions=[{_cap(anchors['decisions'], 4)}]")
     return " | ".join(parts)
 
 
@@ -325,7 +350,7 @@ def chunk_turns(turns: List[Dict[str, Any]], max_tokens: int = 2000) -> List[Int
 
     for idx, msg in enumerate(turns):
         role = msg.get("role", "unknown")
-        content = str(msg.get("content", ""))
+        content = _norm_content(msg)
         text = f"\n--- [Turn {idx} | {role}] ---\n{content}"
         toks = estimate_tokens(text)
 
@@ -413,7 +438,7 @@ def pre_compress_filter_turns(
 
     filtered_turns = [clean_single_turn_message(m) for m in turns]
 
-    post_chars = sum(len(str(m.get("content", ""))) for m in filtered_turns)
+    post_chars = sum(len(_norm_content(m)) for m in filtered_turns)
     dt_ms = (time.perf_counter() - t0) * 1000
 
     saved_chars = max(0, orig_chars - post_chars)
@@ -518,7 +543,7 @@ def extract_decision_chain(turns: List[Dict[str, Any]], max_nodes: int = 40) -> 
                     return cands[max(range(len(cands)), key=lambda i: _scores[i])]
             except Exception:
                 pass
-            return cands[-1]
+            return cands[-1] + " [mech-fallback]"
 
         def _brief(s: str, n: int = 70) -> str:
             s = " ".join(str(s).split())
@@ -541,7 +566,7 @@ def extract_decision_chain(turns: List[Dict[str, Any]], max_nodes: int = 40) -> 
         for msg in turns:
             role = msg.get("role")
             if role == "user":
-                _c = str(msg.get("content", ""))
+                _c = _norm_content(msg)
                 if not _c.startswith(("[STUB:", "[OUT-OF-BAND")):  # 系统注入轮不算用户指令
                     pending_cmds.append(_brief(_c, 60))
                     pending_cmds = pending_cmds[-3:]
@@ -599,7 +624,7 @@ def verify_summary_coverage(turns: List[Dict[str, Any]], summary: str, max_check
     检查项: 实录区在位 / 决策链在位 / 路径实体覆盖 / 数字指标覆盖 (阈值 60%, 数据来自失忆事故区间实测基线 72-79%)。
     """
     try:
-        user_text = "\n".join(str(m.get("content", "")) for m in turns if m.get("role") == "user")
+        user_text = "\n".join(_norm_content(m) for m in turns if m.get("role") == "user")
         paths = list(dict.fromkeys(re.findall(r"(?:/[\w.\-]+){2,}|~[\w./\-]+", user_text)))[:max_check]
         nums = list(dict.fromkeys(re.findall(r"\b\d+(?:\.\d+)?(?:ms|s|min|GB|MB|KB|tok|tok/s|%)\b", user_text)))[:max_check]
         p_miss = [p for p in paths if p not in summary]
@@ -808,6 +833,7 @@ CREATE TABLE IF NOT EXISTS fact_items (
     last_referenced_turn INTEGER DEFAULT 0,
     hits INTEGER DEFAULT 0,
     is_pending INTEGER DEFAULT 0,
+    pending_done INTEGER DEFAULT 0,
     is_invalidated INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now'))
 );
@@ -860,7 +886,24 @@ def advance_memory_lifecycle(db_cursor, current_turn: int) -> List[str]:
     """核心生命周期机械推进 (拍板原文 1:1, 零 LLM 参与):
     1 蔡格尼克免疫 / 2 毒性湮灭 / 3 机械衰减 / 4 机械装配"""
     # 1. 蔡格尼克免疫：未完成项 (is_pending=1) 机械免疫一切衰减，恒定保留
+    try:  # 存量库迁移: pending_done 列 (幂等)
+        db_cursor.execute("ALTER TABLE fact_items ADD COLUMN pending_done INTEGER DEFAULT 0")
+    except Exception:
+        pass
     db_cursor.execute("UPDATE fact_items SET state='ACTIVE' WHERE is_pending=1")
+    # 1b. 免疫退出双通道 (外部反馈#8: 防 open_loop 单调增长挤占窗口):
+    #   a) 显式闭环: 标记 pending_done=1 的条目退出免疫, 转入正常衰减轨道
+    #   b) 疏免疫: 免疫超过 90 轮且从未被引用 (hits=0) 的未完成项, 降为 CONSOLIDATED
+    #      (保留在库可检索, 但退出 Prompt 常驻装配——半免疫)
+    db_cursor.execute(
+        "UPDATE fact_items SET is_pending=0, state='CONSOLIDATED' WHERE is_pending=1 AND pending_done=1"
+    )
+    db_cursor.execute(
+        """UPDATE fact_items
+           SET is_pending=0, state='CONSOLIDATED'
+           WHERE is_pending=1 AND hits=0 AND (? - born_turn) > 90""",
+        (current_turn,),
+    )
     # 2. 毒性湮灭：被显式标记 INVALIDATED 的结论，机械物理擦除
     db_cursor.execute("DELETE FROM fact_items WHERE is_invalidated=1")
     # 3. 机械衰减：距今超过 150 轮且命中次数 hits <= 1 的旧条目 -> ARCHIVED 并移出 Prompt

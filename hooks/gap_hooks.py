@@ -4,6 +4,11 @@
 链路: 压缩摘要产出 → 机械检测未闭环引用(gap, 纯正则四类) → 关键词抽提 →
 state.db LIKE 预筛候选 → embedding service Qwen3-Embedding-0.6B (:8766 daemon) 相似度重排 →
 证据回填块注入摘要顶层。零 LLM 参与; 0.6B 只干检索职能(复用embedding service现役)。
+
+异步契约 (外部反馈#7): 回填耗时(~18s/gap) ≫ 主链压缩(24ms)——生产接线必须异步:
+  1. 主链同步产出摘要时, 对检出 gap 先注入占位标记 `[gap-pending: <kind>]`
+  2. 后台线程跑 fill_gaps, 回填完成后在下一轮摘要中替换占位为证据块
+  3. 禁止主链同步等待检索; 未回填期决策由下一轮回填补齐
 """
 import json
 import math

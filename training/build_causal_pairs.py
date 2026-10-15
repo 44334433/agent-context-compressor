@@ -18,7 +18,7 @@ OUT = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ct
 MAX_PAIRS = 20000
 random.seed(42)
 
-INSTR_RE = re.compile(r"^(做|执行|跑|修|查|写|改|加|删|测试|验证|推进|继续|先|再|然后|帮|请|启动|停止|部署|拍板|按)")
+INSTR_RE = re.compile(r"^(做|执行|跑|修|查|写|改|加|删|测试|验证|推进|继续|先修|先跑|先做|先查|帮|请|启动|停止|部署|拍板|按以下|按此)")
 
 
 def is_instruction(text: str) -> bool:
