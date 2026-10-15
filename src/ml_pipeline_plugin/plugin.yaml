@@ -1,0 +1,4 @@
+name: ml_pipeline
+version: "1.0.0"
+description: "Hermes 自研机器学习摘要压缩引擎 (机械分块清洗 + 5要素事实归纳 + 30min冷启动无伤深压)"
+author: "Hermes Agent Team"
