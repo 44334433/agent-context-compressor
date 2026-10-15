@@ -19,14 +19,14 @@ case "$R" in
     echo "$N" > "$STATE"
     echo "[wd] 探活失败 #$N: ${R:-<empty>}"
     python3 -c "
-import sys; sys.path.insert(0, '/home/qq/.hermes/scripts')
+import sys; sys.path.insert(0, '$HOME/.hermes/scripts')
 from audit_ledger import log
 log('self_catch', 'watchdog', f'embed 探活失败 #{int(open(\"/tmp/embed_watchdog.fail\").read())}')" 2>/dev/null
     if [ "$N" -ge 2 ]; then
       echo "[wd] 连续失败≥2 → restart mem-engine-service (自愈)"
       systemctl --user restart mem-engine-service.service
       python3 -c "
-import sys; sys.path.insert(0, '/home/qq/.hermes/scripts')
+import sys; sys.path.insert(0, '$HOME/.hermes/scripts')
 from audit_ledger import log
 log('self_catch', 'watchdog', 'watchdog 触发自愈 restart mem-engine-service')" 2>/dev/null
       rm -f "$STATE"

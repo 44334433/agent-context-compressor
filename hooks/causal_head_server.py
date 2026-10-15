@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """因果判别头 HTTP 服务 (拍板: 接线提炼摘要支路) — :8767
 
-架构对齐embedding service embed daemon(:8766) 模式: 独立常驻进程, 网关零内存占用, 崩了不连坐。
+架构对齐embedding service embed daemon(:8766) 模式: 独立后台服务, 网关零内存占用, 崩了不连坐。
 POST /v1/pair_score  {"pairs":[{"text_a":..,"text_b":..}]}
   → mmBERT-base+LoRA (causal-head-mmbert) 批推理 → {"scores":[p(配对),...]}
 模型: ~/.hermes/state/model-foundation/models/causal-head-mmbert
