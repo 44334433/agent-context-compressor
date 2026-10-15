@@ -6,15 +6,15 @@ os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
 import torch
 from transformers import AutoModelForTokenClassification, AutoTokenizer
 
-sys_p = os.path.expanduser("~/.hermes/scripts")
+sys_p = os.path.expanduser("~/.agent_ctx/scripts")
 import sys
 sys.path.insert(0, sys_p)
 from train_ab_lora import SpanDataset, collate
 
-VAL = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/corpus/ab_dataset/val.jsonl")
+VAL = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/corpus/ab_dataset/val.jsonl")
 for name, path in [
-    ("v1现役(机械标签927条)", os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/models/hermes-lingua-bge")),
-    ("bge-ab(教师版1585条)", os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/models/hermes-lingua-bge-ab")),
+    ("v1现役(机械标签927条)", os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/models/hermes-lingua-bge")),
+    ("bge-ab(教师版1585条)", os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/models/hermes-lingua-bge-ab")),
 ]:
     tok = AutoTokenizer.from_pretrained(path, use_fast=True)
     if tok.pad_token is None:

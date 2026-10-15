@@ -4,7 +4,7 @@
 架构对齐embedding service embed daemon(:8766) 模式: 独立后台服务, 网关零内存占用, 崩了不连坐。
 POST /v1/pair_score  {"pairs":[{"text_a":..,"text_b":..}]}
   → mmBERT-base+LoRA (causal-head-mmbert) 批推理 → {"scores":[p(配对),...]}
-模型: ~/.hermes/state/model-foundation/models/causal-head-mmbert
+模型: ~/.agent_ctx/state/model-foundation/models/causal-head-mmbert
 """
 import json
 import os
@@ -15,7 +15,7 @@ from peft import PeftModel
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 BASE = os.path.join(os.environ.get("MODEL_DIR", os.path.expanduser("~/models")), "mmBERT-base")
-HEAD = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/models/causal-head-mmbert")
+HEAD = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/models/causal-head-mmbert")
 PORT = 8767
 DEV = "cpu"  # 常驻低频调用: 强制 CPU (GPU 留给 NInfer 27B; CPU 单对 ~30ms 足够)
 

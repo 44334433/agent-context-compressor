@@ -12,7 +12,7 @@ import re
 import sqlite3
 import urllib.request
 
-STATE_DB = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state.db")
+STATE_DB = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state.db")
 EMBED_URL = os.environ.get("EMBED_SERVICE_URL", "http://127.0.0.1:8766/v1/embed")
 
 # ── gap 检测规则 (纯机械, 可持续扩充) ──

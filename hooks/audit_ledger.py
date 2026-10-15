@@ -5,14 +5,14 @@
 两个事件源:
   - user_correction : 用户抓到 (纠错信号词扫描 / 用户显式指错)
   - self_catch      : 系统自检抓到 (验收闸/看门狗/生命周期湮灭/锚点覆写)
-库: ~/.hermes/state/audit_ledger.db  纯 SQLite, 零 LLM。
+库: ~/.agent_ctx/state/audit_ledger.db  纯 SQLite, 零 LLM。
 """
 import json
 import os
 import sqlite3
 from datetime import datetime, timedelta
 
-DB_PATH = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/audit_ledger.db")
+DB_PATH = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/audit_ledger.db")
 
 _DDL = """
 CREATE TABLE IF NOT EXISTS audit_events (

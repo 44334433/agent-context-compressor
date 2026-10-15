@@ -10,8 +10,8 @@ import json
 import os
 import re
 
-_LEDGER = os.path.expanduser("~/.hermes/scripts/audit_ledger.py")
-_STATE = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/audit_correction_seen.json")
+_LEDGER = os.path.expanduser("~/.agent_ctx/scripts/audit_ledger.py")
+_STATE = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/audit_correction_seen.json")
 
 # 纠错信号词表 (保守起点, 误报宁可漏不滥——漏了人工补, 滥了账本失真)
 _SIGNALS = re.compile(

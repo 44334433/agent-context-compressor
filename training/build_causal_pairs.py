@@ -13,8 +13,8 @@ import random
 import sqlite3
 import re
 
-DB = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state.db")
-OUT = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/corpus/causal_pairs")
+DB = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state.db")
+OUT = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/corpus/causal_pairs")
 MAX_PAIRS = 20000
 random.seed(42)
 

@@ -20,7 +20,7 @@ logger = logging.getLogger("hermes.compression.stage15")
 
 BASE_MODEL_DIR = os.path.join(os.environ.get("MODEL_DIR", os.path.expanduser("~/models")), "bge-m3")
 def _get_default_adapter_dir() -> str:
-    home = os.environ.get("HERMES_HOME", os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")))
+    home = os.environ.get("HERMES_HOME", os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")))
     return os.path.join(home, "state", "model-foundation", "models", "hermes-lingua-bge")
 
 ADAPTER_DIR = _get_default_adapter_dir()

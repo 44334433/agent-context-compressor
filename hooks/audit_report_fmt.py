@@ -3,7 +3,7 @@
 import json
 import sys
 
-sys.path.insert(0, "~/.hermes/scripts")
+sys.path.insert(0, os.environ.get("HERMES_SCRIPTS", os.path.expanduser("~/.agent_ctx/scripts")))
 from audit_ledger import report
 
 d = report(int(sys.argv[1]) if len(sys.argv) > 1 else 7)

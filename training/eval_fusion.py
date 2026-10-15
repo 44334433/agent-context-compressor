@@ -12,11 +12,11 @@ os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
 import torch
 from transformers import AutoModelForTokenClassification, AutoTokenizer
 
-sys.path.insert(0, os.path.expanduser("~/.hermes/scripts"))
+sys.path.insert(0, os.path.expanduser("~/.agent_ctx/scripts"))
 from train_ab_lora import SpanDataset, collate
 
 # 锚点正则族 (复用压缩管线真源)
-sys.path.insert(0, "~/.hermes/hermes-agent")
+sys.path.insert(0, "~/.agent_ctx/hermes-agent")
 from agent.compression_ml_pipeline import RE_FILE_PATH, RE_LINE_NUM
 
 RE_NUM_METRIC = re.compile(r"\b\d+(?:\.\d+)?\s*(?:%|ms|s\b|tok|x\b|GB|MB|GiB)")
@@ -79,7 +79,7 @@ def run(model_path: str, tag: str, anchor_overwrite: bool = False):
         return {"f1": round(f1, 4), "keep_rate": round(pred_keep / tot, 4)}
 
 
-VAL = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/corpus/ab_dataset/val.jsonl")
+VAL = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/corpus/ab_dataset/val.jsonl")
 
 # 逐样本版 (覆写需要 token↔字符对齐, 按样本处理)
 def run_persample(model_path: str, tag: str, anchor_overwrite: bool):
@@ -124,9 +124,9 @@ def run_persample(model_path: str, tag: str, anchor_overwrite: bool):
 
 
 if __name__ == "__main__":
-    MMBERT = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/models/hermes-lingua-mmbert")
-    BGE_AB = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/models/hermes-lingua-bge-ab")
-    V1 = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/models/hermes-lingua-bge")
+    MMBERT = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/models/hermes-lingua-mmbert")
+    BGE_AB = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/models/hermes-lingua-bge-ab")
+    V1 = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/models/hermes-lingua-bge")
     print("== 教师版纯推理 (基线) ==")
     run_persample(BGE_AB, "教师版bge-ab", anchor_overwrite=False)
     print("== 融合版: 教师版+锚点覆写 ==")

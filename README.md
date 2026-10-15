@@ -75,6 +75,10 @@ python3 services/causal_head_server.py &     # :8767
 # 5. 作为上下文引擎插件接入你的 agent 框架（src/ml_pipeline_plugin）
 ```
 
+## 状态目录约定
+
+脚本通过 `HERMES_HOME` 环境变量定位状态目录（默认 `~/.agent_ctx`）。接入 Hermes 的机器设 `export HERMES_HOME=~/.hermes` 即可复用现有状态库；独立部署无需任何配置。
+
 ## 仓库结构
 
 ```

@@ -1,7 +1,7 @@
 """Hermes 自研机器学习摘要压缩引擎流水线 · 核心适配层 (Stage 3 Integration)
 
 真源与背景:
-- 交接文档: ~/.hermes/docs/05-交接会话/交接-机器学习摘要压缩引擎-2026-10-14.md
+- 交接文档: ~/.agent_ctx/docs/05-交接会话/交接-机器学习摘要压缩引擎-2026-10-14.md
 - 任务 ID: todo-ml-compression-pipeline (阶段三: 集成接入 Hermes 压缩触发链)
 - 阶段一产物: scripts/compression_pipeline_stage1.py (机械过滤与切片)
 - 阶段二产物: scripts/compression_pipeline_stage2.py (5 要素事实提炼)
@@ -620,7 +620,7 @@ def verify_summary_coverage(turns: List[Dict[str, Any]], summary: str, max_check
             logger.warning("压缩验收闸未过(失忆风险): %s", json.dumps(report, ensure_ascii=False))
             try:  # 审计账本: 自检拦截事件 (2026-10-15 拍「落」)
                 import importlib.util as _ilu
-                _spec = _ilu.spec_from_file_location("audit_ledger", os.path.expanduser("~/.hermes/scripts/audit_ledger.py"))
+                _spec = _ilu.spec_from_file_location("audit_ledger", os.path.expanduser("~/.agent_ctx/scripts/audit_ledger.py"))
                 if _spec and _spec.loader:
                     _al = _ilu.module_from_spec(_spec)
                     _spec.loader.exec_module(_al)
@@ -794,7 +794,7 @@ def generate_five_element_fact_summary(turns: List[Dict[str, Any]]) -> str:
 
 LIFECYCLE_DB_PATH = os.environ.get(
     "COMPRESSION_LIFECYCLE_DB",
-    os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/context_lifecycle.db"),
+    os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/context_lifecycle.db"),
 )
 
 _LIFECYCLE_DDL = """

@@ -43,7 +43,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base-model", required=True)
     ap.add_argument("--output-dir", required=True)
-    ap.add_argument("--data-dir", default=os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/corpus/causal_pairs"))
+    ap.add_argument("--data-dir", default=os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/corpus/causal_pairs"))
     ap.add_argument("--report", required=True)
     ap.add_argument("--target-modules", required=True)
     args = ap.parse_args()

@@ -4,14 +4,14 @@ import json
 import os
 import sys
 
-sys.path.insert(0, "~/.hermes/scripts")
+sys.path.insert(0, os.environ.get("HERMES_SCRIPTS", os.path.expanduser("~/.agent_ctx/scripts")))
 import torch
 from transformers import AutoModelForTokenClassification, AutoTokenizer
 
 from train_ab_lora import SpanDataset, collate
 
-MODEL = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/models/hermes-lingua-bge")
-VAL = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/corpus/ab_dataset/val.jsonl")
+MODEL = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/models/hermes-lingua-bge")
+VAL = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/corpus/ab_dataset/val.jsonl")
 
 tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True)
 if tok.pad_token is None:

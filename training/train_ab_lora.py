@@ -3,7 +3,7 @@
 
 用法:
   python3 train_ab_lora.py --base-model ${MODEL_DIR:-~/models}/mmBERT-base \
-      --output-dir ~/.hermes/state/model-foundation/models/hermes-lingua-mmbert \
+      --output-dir ~/.agent_ctx/state/model-foundation/models/hermes-lingua-mmbert \
       [--report /tmp/ab_mmbert.json]
 底座无关: 任何 HF token-classification 兼容 encoder (mmBERT/XLM-R/bge-m3) 皆可。
 标签: 现场 tokenize+offset_mapping, token 字符区间落在 kept_spans 内=1(保) 否则 0(删)。
@@ -76,7 +76,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base-model", required=True)
     ap.add_argument("--output-dir", required=True)
-    ap.add_argument("--data-dir", default=os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/corpus/ab_dataset"))
+    ap.add_argument("--data-dir", default=os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/corpus/ab_dataset"))
     ap.add_argument("--report", default="")
     ap.add_argument("--target-modules", required=True, help="逗号分隔, 如 Wqkv,Wo 或 query,key,value")
     args = ap.parse_args()

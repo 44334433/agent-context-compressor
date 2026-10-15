@@ -13,12 +13,12 @@ import re
 from difflib import SequenceMatcher
 
 SRC = os.path.expanduser(
-    "~/.hermes/state/model-foundation/corpus/distill_pool/annotated_llmlingua2_stream.jsonl"
+    "~/.agent_ctx/state/model-foundation/corpus/distill_pool/annotated_llmlingua2_stream.jsonl"
 )
 SRC2 = os.path.expanduser(  # v2 扩训: 合并短批教师标注 (2026-10-15 拍板「现在扩训」)
-    "~/.hermes/state/model-foundation/corpus/distill_pool/annotated_llmlingua2_short.jsonl"
+    "~/.agent_ctx/state/model-foundation/corpus/distill_pool/annotated_llmlingua2_short.jsonl"
 )
-OUT_DIR = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/corpus/ab_dataset")
+OUT_DIR = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/corpus/ab_dataset")
 CHUNK = 200
 
 

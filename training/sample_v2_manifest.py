@@ -9,8 +9,8 @@ import random
 import re
 import sqlite3
 
-DB = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state.db")
-OUT = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")), "state/model-foundation/corpus/distill_pool/candidates_manifest_v2.jsonl")
+DB = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state.db")
+OUT = os.path.join(os.environ.get("HERMES_HOME", os.path.expanduser("~/.agent_ctx")), "state/model-foundation/corpus/distill_pool/candidates_manifest_v2.jsonl")
 SENSITIVE = re.compile(r"password|passwd|api[_-]?key|secret|token=|Bearer|@gmail|@qq\.com|@163\.com", re.I)
 TARGETS = {"short": 5000, "mid": 15000, "long": 5000}  # <200 / 200-2000 / >2000 字符
 
